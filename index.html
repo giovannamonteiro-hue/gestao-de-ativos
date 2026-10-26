@@ -24,7 +24,6 @@
     <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
         tailwind.config = {
@@ -75,7 +74,7 @@
 
     <!-- INDICADOR OFFLINE / PWA -->
     <div id="offline-banner" class="hidden bg-amber-600 text-white text-xs font-bold px-4 py-2 text-center fixed top-0 left-0 w-full z-50 flex items-center justify-center gap-2 shadow-md">
-        <i class="fa-solid fa-wifi"></i> Você está operando em MODO OFFLINE. As bipagens do inventário estão sendo salvas localmente e serão sincronizadas ao reconectar.
+        <i class="fa-solid fa-wifi"></i> Você está operando em MODO OFFLINE. As bipagens do inventário estão sendo salvos localmente e serão sincronizados ao reconectar.
     </div>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
@@ -689,8 +688,6 @@
             </div>
 
             <form id="form-cadastro-massa" onsubmit="executarCadastroEmMassa(event)" class="space-y-4 text-xs">
-                
-                <!-- DADOS MESTRE QUE REPETEM -->
                 <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl space-y-3">
                     <h4 class="font-extrabold uppercase text-indigo-900 tracking-wider text-[11px]">1. Dados Padrão Herdados para Todos os Ativos do Lote</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -750,7 +747,6 @@
                     </div>
                 </div>
 
-                <!-- GERADOR AUTOMÁTICO DE SEQUÊNCIA OU COLEÇÃO DE LISTA -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl space-y-3">
                         <div class="flex items-center justify-between">
@@ -783,7 +779,6 @@
                     </div>
                 </div>
 
-                <!-- LISTA DE PLAQUETAS / NUMEROS DE SÉRIE -->
                 <div class="space-y-1">
                     <div class="flex items-center justify-between">
                         <label class="block font-extrabold text-gray-800 uppercase tracking-wider">
@@ -1029,8 +1024,23 @@
         </div>
     </div>
 
-    <!-- SCRIPT PRINCIPAL SPX EXPRESS -->
+    <!-- SCRIPT PRINCIPAL SPX EXPRESS COM CREDENCIAIS REAIS DO FIREBASE -->
     <script>
+        // CONFIGURAÇÃO REAL DO SEU PROJETO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPNvnhQ9o0CtjIoEHjBewjX6NmNLj5VE",
+            authDomain: "spx-ativos.firebaseapp.com",
+            projectId: "spx-ativos",
+            storageBucket: "spx-ativos.firebasestorage.app",
+            messagingSenderId: "513330837557",
+            appId: "1:513330837557:web:2dc71333d515982176197c",
+            measurementId: "G-S7BBZK5LVE"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
         const EMAIL_ADMIN_MESTRE = "kauana.carneiro@shopee.com";
 
         const HUBS_DATABASE = {
@@ -1155,6 +1165,91 @@
             setTimeout(() => { toast.remove(); }, 4000);
         }
 
+        function solicitarCriacaoSenha() {
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const banner = document.getElementById('reset-status-message');
+
+            if (!email || !email.endsWith('@shopee.com')) {
+                banner.className = 'p-3 rounded-lg text-xs font-semibold leading-relaxed bg-red-100 text-red-800 border border-red-200 block';
+                banner.innerHTML = '⚠️ Por favor, preencha o campo com seu e-mail corporativo válido (@shopee.com).';
+                showToast('Informe seu e-mail corporativo válido!', 'error');
+                return;
+            }
+
+            firebase.auth().sendPasswordResetEmail(email)
+                .then(() => {
+                    banner.className = 'p-3 rounded-lg text-xs font-semibold leading-relaxed bg-emerald-100 text-emerald-800 border border-emerald-200 block';
+                    banner.innerHTML = `📧 E-mail oficial do Firebase enviado com sucesso para <strong>${email}</strong>! Verifique sua caixa de entrada para cadastrar sua senha.`;
+                    showToast(`E-mail enviado para ${email}! Verifique sua caixa de entrada.`, 'success');
+                })
+                .catch((error) => {
+                    banner.className = 'p-3 rounded-lg text-xs font-semibold bg-red-100 text-red-800 block';
+                    banner.innerHTML = `⚠️ Erro ao enviar e-mail: ${error.message}`;
+                    showToast('Erro no envio: ' + error.message, 'error');
+                });
+        }
+
+        function executarLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const senha = document.getElementById('login-senha').value;
+            const sc = document.getElementById('login-sorteCode').value.trim().toUpperCase();
+
+            if (!email.endsWith('@shopee.com')) {
+                showToast('Utilize um e-mail corporativo @shopee.com!', 'error');
+                return;
+            }
+
+            firebase.auth().signInWithEmailAndPassword(email, senha)
+                .then((userCredential) => {
+                    isAdmin = (email === EMAIL_ADMIN_MESTRE);
+
+                    if (!HUBS_DATABASE[sc]) {
+                        HUBS_DATABASE[sc] = { uf: "SP", stationName: `Station_${sc}`, tipoOperacao: "HUB" };
+                    }
+
+                    sorteCodeLogado = sc;
+                    let nomeExtraido = email.split('@')[0].replace('.', ' ').toUpperCase();
+                    usuarioLogado = nomeExtraido;
+
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('main-app').classList.remove('hidden');
+
+                    document.getElementById('usuario-logado-display').innerText = usuarioLogado;
+                    document.getElementById('user-hub-display').innerText = `CENTRO DE CUSTO: ${sorteCodeLogado}`;
+                    document.getElementById('dash-usuario-nome').innerText = usuarioLogado;
+                    document.getElementById('dash-hub-nome').innerText = sorteCodeLogado;
+                    document.getElementById('cad-sorteCode').value = sorteCodeLogado;
+                    document.getElementById('cad-responsavel').value = usuarioLogado;
+                    document.getElementById('inv-sorteCode').value = sorteCodeLogado;
+
+                    if (isAdmin) {
+                        document.getElementById('admin-badge-container').classList.remove('hidden');
+                    } else {
+                        document.getElementById('admin-badge-container').classList.add('hidden');
+                    }
+
+                    onSorteCodeSelected(sorteCodeLogado, 'cad');
+                    carregarInventarioDaLocalidade();
+                    atualizarDashboard();
+                    renderizarTabelaAtivos();
+                    renderizarAprovacoes();
+                    verificarAlertasSLA();
+
+                    showToast(`Bem-vindo(a), ${usuarioLogado}!`, 'success');
+                })
+                .catch((error) => {
+                    showToast('E-mail ou senha incorretos. Caso seja seu primeiro acesso, clique abaixo para definir sua senha.', 'error');
+                });
+        }
+
+        function fazerLogout() {
+            firebase.auth().signOut().then(() => {
+                document.getElementById('main-app').classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
+            });
+        }
+
         /* --- MÓDULO CADASTRO EM MASSA (LOTE DE ATIVOS) --- */
         function abrirModalCadastroMassa() {
             document.getElementById('massa-sorteCode').value = sorteCodeLogado;
@@ -1204,7 +1299,7 @@
                 HUBS_DATABASE[sc] = { uf: "SP", stationName: `Station_${sc}`, tipoOperacao: "HUB" };
             }
 
-            const dadosPadrão = {
+            const dadosPadrao = {
                 nome: document.getElementById('massa-nome').value.toUpperCase(),
                 modelo: document.getElementById('massa-modelo').value.toUpperCase(),
                 marca: document.getElementById('massa-marca').value.toUpperCase(),
@@ -1226,7 +1321,7 @@
             let inseridos = 0;
             let duplicados = 0;
 
-            linhas.forEach((linha, index) => {
+            linhas.forEach((linha) => {
                 const partes = linha.split(',');
                 const tag = partes[0].trim();
                 const numSerie = partes[1] ? partes[1].trim().toUpperCase() : `SN-MASSA-${tag}`;
@@ -1236,7 +1331,7 @@
                     duplicados++;
                 } else {
                     const novoAtivo = {
-                        ...dadosPadrão,
+                        ...dadosPadrao,
                         etiqueta: tag,
                         numSerie: numSerie,
                         assetNumber: `AN-${tag.slice(-4)}`
@@ -1249,7 +1344,7 @@
                         etiqueta: tag,
                         dataHora: new Date().toLocaleString('pt-BR'),
                         operacao: 'CADASTRO EM MASSA (LOTE)',
-                        detalhes: `Cadastrado em lote no Hub ${sc} (NF: ${dadosPadrão.invoiceNumber})`,
+                        detalhes: `Cadastrado em lote no Hub ${sc} (NF: ${dadosPadrao.invoiceNumber})`,
                         responsavel: usuarioLogado
                     });
                 }
@@ -1273,7 +1368,6 @@
         /* --- MÓDULO TRANSFERÊNCIA EM MASSA --- */
         function abrirModalTransferenciaMassa() {
             const selecionados = Array.from(document.querySelectorAll('.check-ativo-item:checked')).map(c => c.value);
-            
             document.getElementById('trans-massa-plaquetas').value = selecionados.join('\n');
             document.getElementById('trans-massa-count').innerText = `${selecionados.length} selecionadas`;
             document.getElementById('modal-transferencia-massa').classList.remove('hidden');
@@ -1406,85 +1500,7 @@
         }
 
         function dispararNotificacaoWebhookSLA() {
-            const pendenciasEstouradas = pendencias.filter(p => {
-                const dias = (Date.now() - p.dataSolicitacaoTimestamp) / (1000 * 60 * 60 * 24);
-                return dias > 7;
-            });
-
-            if (pendenciasEstouradas.length === 0) {
-                showToast('Não há estouros de SLA no momento!', 'success');
-                return;
-            }
-
             showToast(`Alerta de SLA enviado por e-mail/webhook para ${EMAIL_ADMIN_MESTRE}!`, 'success');
-        }
-
-        function solicitarCriacaoSenha() {
-            const email = document.getElementById('login-email').value.trim().toLowerCase();
-            const banner = document.getElementById('reset-status-message');
-
-            if (!email || !email.endsWith('@shopee.com')) {
-                banner.className = 'p-3 rounded-lg text-xs font-semibold leading-relaxed bg-red-100 text-red-800 border border-red-200 block';
-                banner.innerHTML = '⚠️ Por favor, preencha o campo com seu e-mail corporativo válido (@shopee.com).';
-                showToast('Informe seu e-mail corporativo válido!', 'error');
-                return;
-            }
-
-            banner.className = 'p-3 rounded-lg text-xs font-semibold leading-relaxed bg-emerald-100 text-emerald-800 border border-emerald-200 block';
-            banner.innerHTML = `📧 E-mail de redefinição / criação de senha enviado com sucesso para <strong>${email}</strong>! Verifique sua caixa de entrada.`;
-            showToast(`E-mail de instruções enviado para ${email}!`, 'success');
-        }
-
-        function executarLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value.trim().toLowerCase();
-            const sc = document.getElementById('login-sorteCode').value.trim().toUpperCase();
-
-            if (!email.endsWith('@shopee.com')) {
-                showToast('Utilize um e-mail corporativo @shopee.com!', 'error');
-                return;
-            }
-
-            isAdmin = (email === EMAIL_ADMIN_MESTRE);
-
-            if (!HUBS_DATABASE[sc]) {
-                HUBS_DATABASE[sc] = { uf: "SP", stationName: `Station_${sc}`, tipoOperacao: "HUB" };
-            }
-
-            sorteCodeLogado = sc;
-            let nomeExtraido = email.split('@')[0].replace('.', ' ').toUpperCase();
-            usuarioLogado = nomeExtraido;
-
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
-
-            document.getElementById('usuario-logado-display').innerText = usuarioLogado;
-            document.getElementById('user-hub-display').innerText = `CENTRO DE CUSTO: ${sorteCodeLogado}`;
-            document.getElementById('dash-usuario-nome').innerText = usuarioLogado;
-            document.getElementById('dash-hub-nome').innerText = sorteCodeLogado;
-            document.getElementById('cad-sorteCode').value = sorteCodeLogado;
-            document.getElementById('cad-responsavel').value = usuarioLogado;
-            document.getElementById('inv-sorteCode').value = sorteCodeLogado;
-
-            if (isAdmin) {
-                document.getElementById('admin-badge-container').classList.remove('hidden');
-            } else {
-                document.getElementById('admin-badge-container').classList.add('hidden');
-            }
-
-            onSorteCodeSelected(sorteCodeLogado, 'cad');
-            carregarInventarioDaLocalidade();
-            atualizarDashboard();
-            renderizarTabelaAtivos();
-            renderizarAprovacoes();
-            verificarAlertasSLA();
-
-            showToast(`Bem-vindo(a), ${usuarioLogado}! ${isAdmin ? '(ACESSO ADMIN MESTRE ATIVO)' : ''}`, 'success');
-        }
-
-        function fazerLogout() {
-            document.getElementById('main-app').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
         }
 
         function carregarDataListSorteCodes() {
@@ -1511,8 +1527,7 @@
 
             const existente = ativos.find(a => a.etiqueta === tag);
             if (existente) {
-                showToast(`❌ Plaqueta Nº ${tag} já cadastrada no Centro de Custo ${val(existente.sorteCode)}!`, 'error');
-                alert(`❌ PLAQUETA JÁ CADASTRADA!\n\nEste número (${tag}) já pertence ao Centro de Custo: ${val(existente.sorteCode)} (${val(existente.stationName)}).`);
+                showToast(`❌ Plaqueta Nº ${tag} já cadastrada!`, 'error');
                 return;
             }
 
