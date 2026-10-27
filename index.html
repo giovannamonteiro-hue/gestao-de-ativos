@@ -1,46 +1,267 @@
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPX Express - Controle de Gestão de Ativos</title>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDPNvnhQ9o0CtjIoEHjBewjX6NmNLj5VE",
-        authDomain: "spx-ativos.firebaseapp.com",
-        projectId: "spx-ativos",
-        storageBucket: "spx-ativos.appspot.com",
-        messagingSenderId: "513330837557",
-        appId: "1:513330837557:web:2dc71333d515982176197c",
-        measurementId: "G-S7BBZK5LVE"
-    };
+    <!-- PWA Manifest Embutido -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"SPX Ativos","short_name":"SPXAtivos","start_url":".","display":"standalone","background_color":"#FFFFFF","theme_color":"#EE4D2D"}'>
+    <meta name="theme-color" content="#EE4D2D">
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    <!-- Tailwind CSS & Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 font-sans antialiased text-gray-900 min-h-screen">
 
-    // 1. Escutar alterações de autenticação (Garante voltar ao Login ao sair)
-    onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            // Se não estiver logado, limpa sessões guardadas e redireciona/recarrega
-            console.log("Nenhum usuário autenticado. Exibindo tela de login.");
-            // Se o seu login fica em outra página ou div, ajuste aqui.
-            // Para forçar a recarga limpa da página de login:
-            if (window.location.hash !== "#login") {
-                window.location.href = window.location.pathname;
+    <!-- ==================== TELA DE LOGIN ==================== -->
+    <div id="loginSection" class="min-h-screen flex items-center justify-center p-4 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80');">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        
+        <div class="relative z-10 w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="bg-[#EE4D2D] p-6 text-center text-white">
+                <div class="inline-block bg-white/20 p-2 rounded-xl mb-2">
+                    <span class="font-black text-2xl tracking-wider">SPX <span class="text-xs font-normal">LOGISTICS</span></span>
+                </div>
+                <h1 class="text-xl font-bold">SPX Shopee Express</h1>
+                <p class="text-xs text-orange-100">Gestão Integrada de Ativos & Inventário RFID</p>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div id="loginFeedback" class="hidden p-3 rounded-lg text-xs font-medium"></div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">E-mail Corporativo *</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
+                            <input type="email" id="emailInput" required placeholder="seu.nome@shopee.com" class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Senha de Acesso *</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
+                            <input type="password" id="passwordInput" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="handleResetPassword()" class="text-xs text-orange-600 hover:underline font-semibold w-full text-left">
+                        📥 Enviar e-mail de redefinição / Primeiro acesso
+                    </button>
+
+                    <button type="submit" class="w-full bg-[#EE4D2D] hover:bg-orange-600 text-white font-bold py-2.5 rounded-lg shadow-md transition-all text-sm flex items-center justify-center gap-2">
+                        ENTRAR NO SISTEMA <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TELA DO PAINEL ==================== -->
+    <div id="appSection" class="hidden min-h-screen flex flex-col md:flex-row">
+        
+        <!-- Overlay Mobile -->
+        <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"></div>
+
+        <!-- Header Mobile -->
+        <header class="md:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30 shadow-sm">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="bg-[#EE4D2D] text-white font-bold text-xs px-2 py-0.5 rounded">SPX</span>
+                    <span class="font-bold text-gray-800 text-sm">Gestão de Ativos</span>
+                </div>
+            </div>
+            <span class="text-xs font-semibold px-2 py-1 bg-orange-100 text-orange-700 rounded-full">SOC-SP8</span>
+        </header>
+
+        <!-- Sidebar / Drawer -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col justify-between transform -translate-x-full md:translate-x-0 md:static md:w-64 transition-transform duration-300 ease-in-out">
+            <div>
+                <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                    <div class="bg-[#EE4D2D] text-white font-black text-lg px-2.5 py-1 rounded-lg tracking-wider">
+                        SPX <span class="text-xs font-normal">LOGISTICS</span>
+                    </div>
+                    <button onclick="toggleSidebar()" class="md:hidden p-1.5 rounded-lg text-gray-400 hover:text-gray-700">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <nav class="p-3 space-y-1">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 text-gray-500"></i> Painel Geral
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg bg-orange-50 text-[#EE4D2D]">
+                        <i data-lucide="boxes" class="w-5 h-5 text-[#EE4D2D]"></i> Inventário Físico / RFID
+                    </a>
+                    <a href="#" class="flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="clock" class="w-5 h-5 text-gray-500"></i> Pendências
+                        </div>
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">1</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50">
+                        <i data-lucide="qr-code" class="w-5 h-5 text-gray-500"></i> Leitor / Consulta Global
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Profile & Logout -->
+            <div class="p-3 border-t border-gray-100 bg-gray-50/50">
+                <div class="mb-2 text-center">
+                    <span class="inline-block w-full py-1 text-[10px] font-bold tracking-wider text-amber-800 bg-amber-100 rounded-md uppercase">
+                        👑 PERFIL ADMIN GLOBAL
+                    </span>
+                </div>
+                
+                <div class="flex items-center gap-3 p-2 rounded-lg bg-white border border-gray-200 shadow-sm mb-2">
+                    <div class="w-8 h-8 rounded-full bg-orange-100 text-[#EE4D2D] flex items-center justify-center font-bold text-xs" id="userAvatar">
+                        KC
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-xs font-bold text-gray-800 truncate" id="userEmailDisplay">UTILIZADOR</p>
+                        <p class="text-[10px] text-gray-500 truncate">CENTRO DE CUSTO: SOC-SP8</p>
+                    </div>
+                </div>
+
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Sair do Sistema
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div class="max-w-5xl mx-auto space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 flex items-start justify-between shadow-sm">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-800 tracking-wide uppercase">1. INVENTARIADO</span>
+                            <div class="text-3xl font-black text-emerald-900 mt-1">0</div>
+                            <p class="text-xs text-emerald-700 mt-1">Localizado e pertence ao Centro de Custo atual</p>
+                        </div>
+                        <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    </div>
+
+                    <div class="bg-purple-50/60 border border-purple-200 rounded-2xl p-4 flex items-start justify-between shadow-sm">
+                        <div>
+                            <span class="text-xs font-bold text-purple-800 tracking-wide uppercase">2. OUTRA LOCALIDADE</span>
+                            <div class="text-3xl font-black text-purple-900 mt-1">0</div>
+                            <p class="text-xs text-purple-700 mt-1">Pertence a outro Centro de Custo registrado</p>
+                        </div>
+                        <span class="w-3 h-3 rounded-full bg-purple-500"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- FIREBASE AUTHENTICATION LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPNvnhQ9o0CtjIoEHjBewjX6NmNLj5VE",
+            authDomain: "spx-ativos.firebaseapp.com",
+            projectId: "spx-ativos",
+            storageBucket: "spx-ativos.appspot.com",
+            messagingSenderId: "513330837557",
+            appId: "1:513330837557:web:2dc71333d515982176197c",
+            measurementId: "G-S7BBZK5LVE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Monitor de Estado (Alterna automaticamente entre Login e Painel)
+        onAuthStateChanged(auth, (user) => {
+            const loginSection = document.getElementById('loginSection');
+            const appSection = document.getElementById('appSection');
+
+            if (user) {
+                loginSection.classList.add('hidden');
+                appSection.classList.remove('hidden');
+                document.getElementById('userEmailDisplay').innerText = user.email.toUpperCase();
+                document.getElementById('userAvatar').innerText = user.email.substring(0, 2).toUpperCase();
+            } else {
+                appSection.classList.add('hidden');
+                loginSection.classList.remove('hidden');
             }
-        } else {
-            console.log("Usuário logado:", user.email);
-        }
-    });
+        });
 
-    // 2. Função global para Sair do Sistema
-    window.handleLogout = async function() {
-        try {
-            await signOut(auth);
-            // Limpa dados locais guardados no navegador
-            localStorage.clear();
-            sessionStorage.clear();
-            // Recarrega a página para voltar à tela inicial de Login
-            window.location.reload();
-        } catch (error) {
-            alert("Erro ao encerrar sessão: " + error.message);
+        // Entrar com E-mail e Senha
+        window.handleLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const feedback = document.getElementById('loginFeedback');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                feedback.classList.add('hidden');
+            } catch (error) {
+                feedback.className = "p-3 rounded-lg text-xs font-medium bg-red-100 text-red-700 border border-red-200";
+                feedback.innerText = "Erro ao entrar: " + error.message;
+                feedback.classList.remove('hidden');
+            }
+        };
+
+        // Redefinição de Senha / Primeiro Acesso
+        window.handleResetPassword = async function() {
+            const email = document.getElementById('emailInput').value;
+            const feedback = document.getElementById('loginFeedback');
+
+            if (!email) {
+                alert("Por favor, digite o seu e-mail corporativo no campo acima.");
+                return;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                feedback.className = "p-3 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200";
+                feedback.innerText = "E-mail de redefinição enviado com sucesso para " + email + "! Verifique a caixa de entrada.";
+                feedback.classList.remove('hidden');
+            } catch (error) {
+                feedback.className = "p-3 rounded-lg text-xs font-medium bg-red-100 text-red-700 border border-red-200";
+                feedback.innerText = "Erro ao enviar e-mail: " + error.message;
+                feedback.classList.remove('hidden');
+            }
+        };
+
+        // Encerramento de Sessão (Logout)
+        window.handleLogout = async function() {
+            try {
+                await signOut(auth);
+                localStorage.clear();
+                sessionStorage.clear();
+            } catch (error) {
+                alert("Erro ao encerrar sessão: " + error.message);
+            }
+        };
+    </script>
+
+    <script>
+        lucide.createIcons();
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+
+            if (isHidden) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
         }
-    };
-</script>
+    </script>
+</body>
+</html>
