@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPX Express - Gestão de Ativos</title>
+    <title>SPX Express - Controle de Gestão de Ativos</title>
 
     <link rel="manifest" href='data:application/manifest+json,{"name":"SPX Ativos","short_name":"SPXAtivos","start_url":".","display":"standalone","background_color":"#FFFFFF","theme_color":"#EE4D2D"}'>
     <meta name="theme-color" content="#EE4D2D">
@@ -42,11 +42,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Centro de Custo (Sorte Code) *</label>
-                        <select id="costCenterInput" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 font-bold uppercase focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                            <option value="SOC-SP8" selected>SOC-SP8 - SoC_SP_São Bernardo do Campo</option>
-                            <option value="SOC-SP2">SOC-SP2 - SoC_SP_Santana</option>
-                            <option value="LM-RJ1">LM-RJ1 - Hub_RJ_Capital</option>
-                        </select>
+                        <input type="text" id="costCenterInput" required value="SOC-SP8" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 font-bold uppercase focus:ring-2 focus:ring-orange-500 focus:outline-none">
                     </div>
 
                     <button type="button" onclick="handleResetPassword()" class="text-xs text-orange-600 hover:underline font-semibold w-full text-left">
@@ -66,7 +62,7 @@
         
         <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"></div>
 
-        <!-- Sidebar Lateral Oficial -->
+        <!-- Sidebar Lateral Oficial Estruturada -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col justify-between transform -translate-x-full md:translate-x-0 md:static md:w-64 transition-transform duration-300 ease-in-out">
             <div>
                 <div class="p-4 border-b border-gray-100 flex items-center justify-between">
@@ -94,7 +90,7 @@
                         <div class="flex items-center gap-3">
                             <i data-lucide="clock" class="w-5 h-5 text-gray-500"></i> Pendências
                         </div>
-                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full" id="totalPendenciasBadge">2</span>
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full" id="totalPendenciasBadge">1</span>
                     </button>
 
                     <button onclick="switchTab('consulta')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-consulta">
@@ -143,13 +139,13 @@
         <main class="flex-1 p-4 md:p-6 overflow-y-auto">
             <div class="max-w-6xl mx-auto space-y-4">
                 
-                <!-- ALERTA GLOBAL DE SLA -->
+                <!-- BANNER DE SLA (REDIRECIONA PARA PENDÊNCIAS) -->
                 <div id="globalSlaBanner" class="bg-red-600 text-white rounded-2xl p-4 shadow-md flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <i data-lucide="alert-triangle" class="w-7 h-7 text-white flex-shrink-0"></i>
                         <div>
-                            <h3 class="font-bold text-sm uppercase tracking-wide">ATENÇÃO ADMIN: PENDÊNCIAS E SLA FORA DO PRAZO (>7 DIAS)</h3>
-                            <p class="text-xs text-red-100">Existem pendências de trânsito ou inventário não localizado que necessitam de intervenção.</p>
+                            <h3 class="font-bold text-sm uppercase tracking-wide">ATENÇÃO ADMIN: TRANSFÊRENCIAS FORA DO SLA (MAIS DE 7 DIAS)</h3>
+                            <p class="text-xs text-red-100">Existem pendências de trânsito estouradas necessitando de intervenção imediata.</p>
                         </div>
                     </div>
                     <button onclick="switchTab('pendencias')" class="bg-white text-red-600 hover:bg-red-50 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow">
@@ -258,49 +254,37 @@
                 <!-- 3. PENDÊNCIAS & MONITORAMENTO SLA -->
                 <div id="tab-pendencias" class="tab-content hidden space-y-4">
                     <div>
-                        <h2 class="text-xl font-black text-gray-800">Pendências & Monitoramento SLA</h2>
-                        <p class="text-xs text-gray-500">Acompanhamento centralizado de transferências atrasadas e alertas de inventário não localizado (>7 dias).</p>
+                        <h2 class="text-xl font-black text-gray-800">Pendências de Transferência & Monitoramento SLA</h2>
+                        <p class="text-xs text-gray-500">Acompanhamento das solicitações em trânsito. Transferências sem aceite em mais de 7 dias acionam o ADMIN.</p>
                     </div>
 
                     <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                        <div class="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-700 uppercase">Pendências de Transferência & Inventário</span>
-                            <span class="text-xs font-semibold px-2.5 py-1 bg-red-100 text-red-700 rounded-full">2 Itens em SLA Crítico</span>
-                        </div>
-
-                        <div class="divide-y divide-gray-100 text-xs">
-                            <!-- Pendência 1: Transferência -->
-                            <div class="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-red-50/30">
-                                <div class="space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-bold text-gray-900">Nº 1000000001</span>
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-700">TRANSFERÊNCIA</span>
-                                    </div>
-                                    <p class="text-gray-500">Origem: <span class="font-semibold text-gray-700">SoC_SP_Santana (SOC-SP2)</span> → Destino: <span class="font-semibold text-orange-600">SOC-SP8</span></p>
-                                    <p class="text-xs text-red-600 font-medium">Data Solicitação: 16/10/2026 (10 Dia(s) em trânsito - Estourado)</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600 text-white">🚨 SLA ESTOURADO (>7 DIAS)</span>
-                                    <button class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold">Aprovar</button>
-                                    <button class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold">Recusar</button>
-                                </div>
-                            </div>
-
-                            <!-- Pendência 2: Inventário -->
-                            <div class="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-red-50/30">
-                                <div class="space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="font-bold text-gray-900">Monitor LG 29 IPS Ultrawide (Nº 1000000002)</span>
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700">INVENTÁRIO</span>
-                                    </div>
-                                    <p class="text-gray-500">Centro de Custo: <span class="font-semibold text-gray-700">SOC-SP8</span> | Responsável: KAUANA CARNEIRO</p>
-                                    <p class="text-xs text-red-600 font-medium">Status: NÃO LOCALIZADO Há 8 Dias Corridos (Limite: 7 Dias)</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600 text-white">🚨 SLA INVENTÁRIO EXCEDIDO</span>
-                                    <button class="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold">Dar Baixa / Regularizar</button>
-                                </div>
-                            </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b text-gray-500 uppercase font-bold">
+                                        <th class="p-3">PLAQUETA / ATIVO</th>
+                                        <th class="p-3">ORIGEM</th>
+                                        <th class="p-3">DESTINO SOLICITADO</th>
+                                        <th class="p-3">DATA SOLICITAÇÃO / IDADE</th>
+                                        <th class="p-3">STATUS SLA</th>
+                                        <th class="p-3 text-center">AÇÕES ADMIN / RESPONSÁVEL</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-red-50/40">
+                                        <td class="p-3 font-bold">Nº 1000000001<br><span class="text-gray-400 font-normal">Resp: KAUANA CARNEIRO</span></td>
+                                        <td class="p-3 font-bold text-orange-600">SOC-SP2<br><span class="text-gray-400 font-normal">SoC_SP_Santana</span></td>
+                                        <td class="p-3 font-bold text-orange-600">SOC-SP8<br><span class="text-gray-400 font-normal">SoC_SP_São Bernardo do Campo</span></td>
+                                        <td class="p-3 font-bold text-red-600">16/10/2026<br>10 Dia(s) em trânsito</td>
+                                        <td class="p-3"><span class="px-2.5 py-1 rounded bg-red-600 text-white font-bold text-[10px]">🚨 SLA ESTOURADO (>7 DIAS)</span></td>
+                                        <td class="p-3 text-center space-x-1">
+                                            <button class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold">Aprovar ✓</button>
+                                            <button class="bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold">Recusar ✕</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -362,7 +346,7 @@
                                         <td class="p-3 font-bold text-emerald-600">R$ 4.500,00</td>
                                         <td class="p-3"><span class="px-2 py-1 rounded bg-purple-100 text-purple-700 font-bold text-[10px]">🚚 EM TRÂNSITO</span></td>
                                         <td class="p-3 text-center space-x-1">
-                                            <button onclick="abrirTransferenciaMassaModal()" title="Transferência" class="p-1.5 hover:bg-orange-50 rounded text-orange-600"><i data-lucide="arrow-left-right" class="w-4 h-4"></i></button>
+                                            <button onclick="abrirTransferenciaMassaModal()" title="Transferência em Massa" class="p-1.5 hover:bg-orange-50 rounded text-orange-600"><i data-lucide="arrow-left-right" class="w-4 h-4"></i></button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -373,7 +357,7 @@
                                         <td class="p-3 font-bold text-emerald-600">R$ 1.200,00</td>
                                         <td class="p-3"><span class="px-2 py-1 rounded bg-emerald-100 text-emerald-700 font-bold text-[10px]">EM ESTOQUE</span></td>
                                         <td class="p-3 text-center space-x-1">
-                                            <button onclick="abrirTransferenciaMassaModal()" title="Transferência" class="p-1.5 hover:bg-orange-50 rounded text-orange-600"><i data-lucide="arrow-left-right" class="w-4 h-4"></i></button>
+                                            <button onclick="abrirTransferenciaMassaModal()" title="Transferência em Massa" class="p-1.5 hover:bg-orange-50 rounded text-orange-600"><i data-lucide="arrow-left-right" class="w-4 h-4"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -549,12 +533,12 @@
         <div class="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="font-bold text-base text-gray-800 flex items-center gap-2">
-                    <i data-lucide="arrow-left-right" class="w-5 h-5 text-[#EE4D2D]"></i> Transferência em Massa
+                    <i data-lucide="arrow-left-right" class="w-5 h-5 text-[#EE4D2D]"></i> Transferência de Ativos em Massa
                 </h3>
                 <button onclick="fecharTransferenciaMassaModal()" class="text-gray-400 hover:text-gray-700"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
-            <p class="text-xs text-gray-500">Selecione o destino e repita para a quantidade de ativos a transferir.</p>
+            <p class="text-xs text-gray-500">Selecione o destino e repita a solicitação para a quantidade de ativos selecionados.</p>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
@@ -571,7 +555,7 @@
             </div>
 
             <div class="border-2 border-dashed border-gray-300 rounded-xl p-3 text-center">
-                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">📷 Anexar Foto individual/Condição da Carga</label>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">📷 Anexar Fotos Múltiplas / Condição da Carga</label>
                 <input type="file" multiple accept="image/*" class="w-full text-xs text-gray-500">
             </div>
 
@@ -727,9 +711,9 @@
         }
 
         function gerarCadastroEmMassa() {
-            const qtd = prompt("Quantas cópias em massa deseja criar baseadas no formulário atual?", "3");
+            const qtd = prompt("Quantos ativos deseja gerar em massa utilizando este formulário como base?", "3");
             if (qtd && !isNaN(qtd) && parseInt(qtd) > 0) {
-                alert(`Gerando ${qtd} registros em massa. Lembre-se de adicionar a foto e ajustar as plaquetas individuais.`);
+                alert(`Gerando ${qtd} registros em massa. Lembre-se de adicionar a foto e ajustar as plaquetas/séries individuais.`);
             }
         }
 
