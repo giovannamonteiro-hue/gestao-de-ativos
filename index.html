@@ -75,7 +75,7 @@
             <span class="text-xs font-semibold px-2 py-1 bg-orange-100 text-orange-700 rounded-full" id="headerCostCenter">SOC-SP8</span>
         </header>
 
-        <!-- Sidebar Restaurada com os itens originais -->
+        <!-- Menu Completo Restaurado -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col justify-between transform -translate-x-full md:translate-x-0 md:static md:w-64 transition-transform duration-300 ease-in-out">
             <div>
                 <div class="p-4 border-b border-gray-100 flex items-center justify-between">
@@ -88,12 +88,12 @@
                 </div>
 
                 <nav class="p-3 space-y-1">
-                    <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-dashboard">
-                        <i data-lucide="layout-grid" class="w-5 h-5 text-gray-500"></i> Painel Geral
+                    <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg bg-orange-50 text-[#EE4D2D] text-left" id="btn-dashboard">
+                        <i data-lucide="layout-grid" class="w-5 h-5 text-[#EE4D2D]"></i> Painel Geral
                     </button>
 
-                    <button onclick="switchTab('inventario')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg bg-orange-50 text-[#EE4D2D] text-left" id="btn-inventario">
-                        <i data-lucide="qr-code" class="w-5 h-5 text-[#EE4D2D]"></i> Inventário Físico / RFID
+                    <button onclick="switchTab('inventario')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-inventario">
+                        <i data-lucide="boxes" class="w-5 h-5 text-gray-500"></i> Inventário Físico / RFID
                     </button>
 
                     <button onclick="switchTab('pendencias')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-pendencias">
@@ -104,7 +104,7 @@
                     </button>
 
                     <button onclick="switchTab('consulta')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-consulta">
-                        <i data-lucide="scan-line" class="w-5 h-5 text-gray-500"></i> Leitor / Consulta Global
+                        <i data-lucide="qr-code" class="w-5 h-5 text-gray-500"></i> Leitor / Consulta Global
                     </button>
 
                     <button onclick="switchTab('lista')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-lista">
@@ -137,7 +137,7 @@
                         KC
                     </div>
                     <div class="overflow-hidden">
-                        <p class="text-xs font-bold text-gray-800 truncate" id="userEmailDisplay">KAUANA CARNEIRO</p>
+                        <p class="text-xs font-bold text-gray-800 truncate" id="userEmailDisplay">UTILIZADOR</p>
                         <p class="text-[10px] text-gray-500 truncate" id="userCostCenterDisplay">CENTRO DE CUSTO: SOC-SP8</p>
                     </div>
                 </div>
@@ -152,8 +152,8 @@
         <main class="flex-1 p-4 md:p-6 overflow-y-auto">
             <div class="max-w-5xl mx-auto">
                 
-                <!-- DASHBOARD / PAINEL GERAL -->
-                <div id="tab-dashboard" class="tab-content hidden space-y-4">
+                <!-- PAINEL GERAL -->
+                <div id="tab-dashboard" class="tab-content space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 flex items-start justify-between shadow-sm">
                             <div>
@@ -176,25 +176,12 @@
                 </div>
 
                 <!-- INVENTÁRIO FÍSICO / RFID -->
-                <div id="tab-inventario" class="tab-content space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 flex items-start justify-between shadow-sm">
-                            <div>
-                                <span class="text-xs font-bold text-emerald-800 tracking-wide uppercase">1. INVENTARIADO</span>
-                                <div class="text-3xl font-black text-emerald-900 mt-1">0</div>
-                                <p class="text-xs text-emerald-700 mt-1">Localizado e pertence ao Centro de Custo atual</p>
-                            </div>
-                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                        </div>
-
-                        <div class="bg-purple-50/60 border border-purple-200 rounded-2xl p-4 flex items-start justify-between shadow-sm">
-                            <div>
-                                <span class="text-xs font-bold text-purple-800 tracking-wide uppercase">2. OUTRA LOCALIDADE</span>
-                                <div class="text-3xl font-black text-purple-900 mt-1">0</div>
-                                <p class="text-xs text-purple-700 mt-1">Pertence a outro Centro de Custo registrado</p>
-                            </div>
-                            <span class="w-3 h-3 rounded-full bg-purple-500"></span>
-                        </div>
+                <div id="tab-inventario" class="tab-content hidden space-y-4">
+                    <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                        <h2 class="text-lg font-bold text-gray-800 border-b pb-2 flex items-center gap-2">
+                            <i data-lucide="boxes" class="w-5 h-5 text-[#EE4D2D]"></i> Inventário Físico / RFID
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-2">Módulo de leitura RFID e contagem ativa.</p>
                     </div>
                 </div>
 
@@ -402,14 +389,20 @@
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.className = "nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left";
                 const icon = btn.querySelector('i');
-                if(icon) icon.className = icon.className.replace('text-[#EE4D2D]', 'text-gray-500');
+                if(icon) {
+                    icon.classList.remove('text-[#EE4D2D]');
+                    icon.classList.add('text-gray-500');
+                }
             });
 
             const activeBtn = document.getElementById('btn-' + tabId);
             if(activeBtn) {
                 activeBtn.className = "nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg bg-orange-50 text-[#EE4D2D] text-left";
                 const activeIcon = activeBtn.querySelector('i');
-                if(activeIcon) activeIcon.className = activeIcon.className.replace('text-gray-500', 'text-[#EE4D2D]');
+                if(activeIcon) {
+                    activeIcon.classList.remove('text-gray-500');
+                    activeIcon.classList.add('text-[#EE4D2D]');
+                }
             }
 
             if (window.innerWidth < 768) toggleSidebar();
