@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPX Express - Controle de Gestão de Ativos</title>
 
+    <!-- PWA Manifest Embutido -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"SPX Ativos","short_name":"SPXAtivos","start_url":".","display":"standalone","background_color":"#FFFFFF","theme_color":"#EE4D2D"}'>
     <meta name="theme-color" content="#EE4D2D">
 
+    <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -62,7 +64,7 @@
         
         <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"></div>
 
-        <!-- Sidebar Lateral Oficial Estruturada -->
+        <!-- Sidebar Lateral Oficial -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col justify-between transform -translate-x-full md:translate-x-0 md:static md:w-64 transition-transform duration-300 ease-in-out">
             <div>
                 <div class="p-4 border-b border-gray-100 flex items-center justify-between">
@@ -139,7 +141,7 @@
         <main class="flex-1 p-4 md:p-6 overflow-y-auto">
             <div class="max-w-6xl mx-auto space-y-4">
                 
-                <!-- BANNER DE SLA (REDIRECIONA PARA PENDÊNCIAS) -->
+                <!-- BANNER DE SLA (REDIRECIONA PARA A ABA SEPARADA DE PENDÊNCIAS) -->
                 <div id="globalSlaBanner" class="bg-red-600 text-white rounded-2xl p-4 shadow-md flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <i data-lucide="alert-triangle" class="w-7 h-7 text-white flex-shrink-0"></i>
@@ -251,11 +253,11 @@
                     </div>
                 </div>
 
-                <!-- 3. PENDÊNCIAS & MONITORAMENTO SLA -->
+                <!-- 3. PENDÊNCIAS & MONITORAMENTO SLA (JANELA SEPARADA) -->
                 <div id="tab-pendencias" class="tab-content hidden space-y-4">
                     <div>
                         <h2 class="text-xl font-black text-gray-800">Pendências de Transferência & Monitoramento SLA</h2>
-                        <p class="text-xs text-gray-500">Acompanhamento das solicitações em trânsito. Transferências sem aceite em mais de 7 dias acionam o ADMIN.</p>
+                        <p class="text-xs text-gray-500">Acompanhamento das solicitações em trânsito e alertas de inventário não localizado (>7 dias).</p>
                     </div>
 
                     <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
@@ -264,14 +266,14 @@
                                 <thead>
                                     <tr class="bg-gray-50 border-b text-gray-500 uppercase font-bold">
                                         <th class="p-3">PLAQUETA / ATIVO</th>
-                                        <th class="p-3">ORIGEM</th>
-                                        <th class="p-3">DESTINO SOLICITADO</th>
+                                        <th class="p-3">ORIGEM / CENTRO</th>
+                                        <th class="p-3">DESTINO / STATUS</th>
                                         <th class="p-3">DATA SOLICITAÇÃO / IDADE</th>
                                         <th class="p-3">STATUS SLA</th>
                                         <th class="p-3 text-center">AÇÕES ADMIN / RESPONSÁVEL</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="divide-y divide-gray-100">
                                     <tr class="bg-red-50/40">
                                         <td class="p-3 font-bold">Nº 1000000001<br><span class="text-gray-400 font-normal">Resp: KAUANA CARNEIRO</span></td>
                                         <td class="p-3 font-bold text-orange-600">SOC-SP2<br><span class="text-gray-400 font-normal">SoC_SP_Santana</span></td>
@@ -279,8 +281,8 @@
                                         <td class="p-3 font-bold text-red-600">16/10/2026<br>10 Dia(s) em trânsito</td>
                                         <td class="p-3"><span class="px-2.5 py-1 rounded bg-red-600 text-white font-bold text-[10px]">🚨 SLA ESTOURADO (>7 DIAS)</span></td>
                                         <td class="p-3 text-center space-x-1">
-                                            <button class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold">Aprovar ✓</button>
-                                            <button class="bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold">Recusar ✕</button>
+                                            <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-bold">Aprovar ✓</button>
+                                            <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-bold">Recusar ✕</button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -570,6 +572,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // Cole a sua apiKey do Firebase (spx-actives) entre as aspas abaixo
         const firebaseConfig = {
             apiKey: "AIzaSyDPNvnhQ9o0CtjIOeNHjBewjX6NmNLj5VE",
             authDomain: "spx-actives.firebaseapp.com",
