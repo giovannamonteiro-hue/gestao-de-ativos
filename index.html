@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPX Express - Controle de Gestão de Ativos</title>
 
+    <!-- PWA Manifest Embutido -->
     <link rel="manifest" href='data:application/manifest+json,{"name":"SPX Ativos","short_name":"SPXAtivos","start_url":".","display":"standalone","background_color":"#FFFFFF","theme_color":"#EE4D2D"}'>
     <meta name="theme-color" content="#EE4D2D">
 
+    <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -60,8 +62,10 @@
     <!-- ==================== TELA DO PAINEL ==================== -->
     <div id="appSection" class="hidden min-h-screen flex flex-col md:flex-row">
         
+        <!-- Overlay Mobile -->
         <div id="sidebarOverlay" onclick="toggleSidebar()" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"></div>
 
+        <!-- Header Mobile -->
         <header class="md:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30 shadow-sm">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100">
@@ -89,42 +93,19 @@
 
                 <nav class="p-3 space-y-1">
                     <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg bg-orange-50 text-[#EE4D2D] text-left" id="btn-dashboard">
-                        <i data-lucide="layout-grid" class="w-5 h-5 text-[#EE4D2D]"></i> Painel Geral
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 text-[#EE4D2D]"></i> Painel Geral
                     </button>
-
-                    <button onclick="switchTab('inventario')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-inventario">
-                        <i data-lucide="boxes" class="w-5 h-5 text-gray-500"></i> Inventário Físico / RFID
-                    </button>
-
-                    <button onclick="switchTab('pendencias')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-pendencias">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="clock" class="w-5 h-5 text-gray-500"></i> Pendências
-                        </div>
-                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">1</span>
-                    </button>
-
-                    <button onclick="switchTab('consulta')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-consulta">
-                        <i data-lucide="qr-code" class="w-5 h-5 text-gray-500"></i> Leitor / Consulta Global
-                    </button>
-
-                    <button onclick="switchTab('lista')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-lista">
-                        <i data-lucide="list" class="w-5 h-5 text-gray-500"></i> Lista de Ativos
-                    </button>
-
                     <button onclick="switchTab('entrada')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-entrada">
                         <i data-lucide="plus-circle" class="w-5 h-5 text-gray-500"></i> Nova Entrada
                     </button>
-
                     <button onclick="switchTab('massa')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-massa">
                         <i data-lucide="layers" class="w-5 h-5 text-gray-500"></i> Entrada em Massa
                     </button>
-
-                    <button onclick="switchTab('transferencia')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-transferencia">
-                        <i data-lucide="arrow-left-right" class="w-5 h-5 text-gray-500"></i> Transferência de Ativos
-                    </button>
-
-                    <button onclick="switchTab('historico')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-historico">
-                        <i data-lucide="history" class="w-5 h-5 text-gray-500"></i> Histórico de Audit
+                    <button onclick="switchTab('pendencias')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 text-left" id="btn-pendencias">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="clock" class="w-5 h-5 text-gray-500"></i> Pendências / SLA
+                        </div>
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">1</span>
                     </button>
                 </nav>
             </div>
@@ -155,9 +136,9 @@
 
         <!-- Conteúdo Principal -->
         <main class="flex-1 p-4 md:p-6 overflow-y-auto">
-            <div class="max-w-6xl mx-auto space-y-6">
+            <div class="max-w-5xl mx-auto">
                 
-                <!-- DASHBOARD / PAINEL GERAL -->
+                <!-- ABA 1: DASHBOARD -->
                 <div id="tab-dashboard" class="tab-content space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 flex items-start justify-between shadow-sm">
@@ -180,202 +161,80 @@
                     </div>
                 </div>
 
-                <!-- INVENTÁRIO FÍSICO / RFID -->
-                <div id="tab-inventario" class="tab-content hidden space-y-4">
-                    <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                        <h2 class="text-lg font-bold text-gray-800 border-b pb-2 flex items-center gap-2">
-                            <i data-lucide="boxes" class="w-5 h-5 text-[#EE4D2D]"></i> Inventário Físico / RFID
-                        </h2>
-                        <p class="text-xs text-gray-500 mt-2">Módulo de leitura RFID e contagem ativa.</p>
-                    </div>
-                </div>
-
-                <!-- CADASTRO INDIVIDUAL -->
+                <!-- ABA 2: NOVA ENTRADA INDIVIDUAL -->
                 <div id="tab-entrada" class="tab-content hidden">
-                    <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-6">
-                        <h2 class="text-lg font-bold text-gray-800 border-b pb-3 flex items-center gap-2">
-                            <i data-lucide="plus-circle" class="w-5 h-5 text-[#EE4D2D]"></i> Cadastro Individual de Ativo
+                    <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm max-w-2xl mx-auto space-y-4">
+                        <h2 class="text-lg font-bold text-gray-800 border-b pb-2 flex items-center gap-2">
+                            <i data-lucide="plus-circle" class="w-5 h-5 text-[#EE4D2D]"></i> Nova Entrada de Ativo Individual
                         </h2>
-
-                        <form onsubmit="salvarNovaEntrada(event)" class="space-y-6">
-                            <div class="p-4 bg-blue-50/50 border border-blue-100 rounded-xl space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">Nº PLAQUETA * (ÚNICA NO BANCO SPX)</label>
-                                        <input type="text" required placeholder="Ex: 1000000005" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">DESCRIÇÃO DO EQUIPAMENTO *</label>
-                                        <input type="text" required placeholder="Ex: COLETOR DE DADOS ZEBRA" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">MODELO *</label>
-                                        <input type="text" required placeholder="Ex: TC21" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">MARCA *</label>
-                                        <input type="text" required placeholder="Ex: ZEBRA" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">NÚMERO DE SÉRIE *</label>
-                                        <input type="text" required placeholder="Ex: SN-88991122" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">DATA DE AQUISIÇÃO</label>
-                                        <input type="date" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">PURCHASE ORDERS (P.O.)</label>
-                                        <input type="text" placeholder="Ex: PO-SPX-2026" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">ASSET NUMBER</label>
-                                        <input type="text" placeholder="Ex: AN-9981" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-blue-900 uppercase mb-1">INVOICE NUMBER (NF)</label>
-                                        <input type="text" placeholder="Ex: NF-77412" class="w-full p-2.5 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="p-4 bg-orange-50/50 border border-orange-100 rounded-xl space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-                                    <div class="md:col-span-1">
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">SORTE CODE *</label>
-                                        <select id="singleSorteCode" required onchange="atualizarSorteCodeSingle(this.value)" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-white font-bold text-orange-700 focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                            <option value="SOC-SP8">SOC-SP8</option>
-                                            <option value="SOC-SP2">SOC-SP2</option>
-                                            <option value="LM-RJ1">LM-RJ1</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">UF</label>
-                                        <input type="text" id="singleUf" readonly value="SP" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-gray-100 text-gray-700 font-bold">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">STATION NAME</label>
-                                        <input type="text" id="singleStation" readonly value="SoC_SP_Guarulhos" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-gray-100 text-gray-700 font-bold">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">TIPO DE OPERAÇÃO</label>
-                                        <input type="text" id="singleTipoOp" readonly value="SOC" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-gray-100 text-gray-700 font-bold">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">LOCALIZAÇÃO *</label>
-                                        <input type="text" required placeholder="Ex: RUA 3, PRATELEIRA B" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-white text-gray-900 font-bold focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="p-4 bg-emerald-50/50 border border-emerald-100 rounded-xl">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-xs font-bold text-emerald-900 uppercase mb-1">VALOR DE AQUISIÇÃO (R$)</label>
-                                        <input type="number" step="0.01" id="singleValAquisicao" oninput="calcularTotalSingle()" placeholder="3200.00" class="w-full p-2.5 border border-emerald-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-emerald-900 uppercase mb-1">VALOR COMPLEMENTAR (R$)</label>
-                                        <input type="number" step="0.01" id="singleValComp" oninput="calcularTotalSingle()" placeholder="150.00" class="w-full p-2.5 border border-emerald-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-emerald-900 uppercase mb-1">VALOR TOTAL (R$)</label>
-                                        <input type="text" id="singleValTotal" readonly value="0.00" class="w-full p-2.5 border border-emerald-200 rounded-lg text-sm bg-gray-100 text-emerald-900 font-black">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        
+                        <form onsubmit="salvarNovaEntrada(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">RESPONSÁVEL *</label>
-                                    <input type="text" required value="KAUANA CARNEIRO" class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nome do Equipamento *</label>
+                                    <input type="text" id="singleNome" required placeholder="Ex: Leitor RFID Zebra" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">COLABORADOR (USUÁRIO FINAL)</label>
-                                    <input type="text" placeholder="Ex: MARCOS LIMA" class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">ESTADO DO BEM *</label>
-                                    <select required class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                        <option value="NOVO">NOVO</option>
-                                        <option value="USADO">USADO</option>
-                                        <option value="DANIFICADO">DANIFICADO</option>
-                                        <option value="EM MANUTENCAO">EM MANUTENÇÃO</option>
-                                    </select>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Número de Série / Tag *</label>
+                                    <input type="text" id="singleSerie" required placeholder="Ex: SN-99882211" class="w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center bg-gray-50/50">
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">📄 ANEXO NF (PERMITE MÚLTIPLOS)</label>
-                                    <input type="file" multiple accept="image/*,.pdf" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-[#EE4D2D] hover:file:bg-orange-100 cursor-pointer">
+                            <!-- CAMPO DE FOTO DO EQUIPAMENTO -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">📷 Foto do Equipamento</label>
+                                <div class="flex items-center gap-4">
+                                    <label class="flex-1 flex items-center justify-center gap-2 p-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-orange-500 hover:bg-orange-50/50 transition-all text-xs font-semibold text-gray-600">
+                                        <i data-lucide="camera" class="w-4 h-4 text-[#EE4D2D]"></i>
+                                        <span>Tirar foto ou Selecionar arquivo</span>
+                                        <input type="file" accept="image/*" capture="environment" onchange="previewImage(event, 'previewSingle')" class="hidden">
+                                    </label>
                                 </div>
-
-                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center bg-gray-50/50">
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">📷 FOTO DO EQUIPAMENTO (PERMITE MÚLTIPLAS)</label>
-                                    <input type="file" multiple accept="image/*" capture="environment" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-[#EE4D2D] hover:file:bg-orange-100 cursor-pointer">
+                                <div id="previewSingle" class="mt-2 hidden">
+                                    <img src="" alt="Pré-visualização" class="w-24 h-24 object-cover rounded-lg border border-gray-200 shadow-sm">
                                 </div>
                             </div>
 
-                            <button type="submit" class="w-full bg-[#EE4D2D] hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
-                                <i data-lucide="save" class="w-5 h-5"></i> REGISTRAR EQUIPAMENTO NO BANCO SPX
+                            <button type="submit" class="w-full bg-[#EE4D2D] hover:bg-orange-600 text-white font-bold py-2.5 rounded-lg shadow-md transition-all text-sm flex items-center justify-center gap-2">
+                                <i data-lucide="save" class="w-4 h-4"></i> Registrar Equipamento
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- ENTRADA EM MASSA -->
+                <!-- ABA 3: ENTRADA EM MASSA COM AUTO-PREENCHIMENTO -->
                 <div id="tab-massa" class="tab-content hidden">
                     <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
-                        <div class="flex items-center justify-between border-b pb-3">
-                            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                <i data-lucide="layers" class="w-5 h-5 text-[#EE4D2D]"></i> Cadastro em Massa de Equipamentos
-                            </h2>
-                            <button onclick="adicionarLinhaMassa()" class="bg-orange-50 hover:bg-orange-100 text-[#EE4D2D] border border-orange-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1">
-                                <i data-lucide="plus" class="w-4 h-4"></i> Adicionar Nova Linha
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                    <i data-lucide="layers" class="w-5 h-5 text-[#EE4D2D]"></i> Entrada em Massa de Equipamentos
+                                </h2>
+                                <p class="text-xs text-gray-500 mt-0.5">As novas linhas copiam automaticamente os dados preenchidos da 1ª linha.</p>
+                            </div>
+                            <button onclick="adicionarLinhaMassa()" class="bg-orange-50 hover:bg-orange-100 text-[#EE4D2D] border border-orange-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Adicionar Linha (Copia Anterior)
                             </button>
                         </div>
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead>
-                                    <tr class="bg-gray-100 border-b text-gray-700 uppercase font-bold">
-                                        <th class="p-2.5 min-w-[120px]">Nº Plaqueta *</th>
-                                        <th class="p-2.5 min-w-[150px]">Descrição *</th>
-                                        <th class="p-2.5 min-w-[100px]">Modelo *</th>
-                                        <th class="p-2.5 min-w-[100px]">Marca *</th>
-                                        <th class="p-2.5 min-w-[120px]">Nº Série *</th>
-                                        <th class="p-2.5 min-w-[140px]">Sorte Code *</th>
-                                        <th class="p-2.5 min-w-[130px]">Localização *</th>
-                                        <th class="p-2.5 min-w-[160px]">📄 Anexos NF</th>
-                                        <th class="p-2.5 min-w-[160px]">📷 Fotos Equipamento</th>
+                                    <tr class="bg-gray-50 border-b text-gray-700 uppercase font-bold">
+                                        <th class="p-2.5">Equipamento *</th>
+                                        <th class="p-2.5">Série / Tag *</th>
+                                        <th class="p-2.5">📷 Foto do Equipamento</th>
                                         <th class="p-2.5 text-center">Ação</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabelaMassaBody">
-                                    <tr class="border-b">
-                                        <td class="p-1.5"><input type="text" required placeholder="1000000005" class="w-full p-2 border rounded text-xs"></td>
-                                        <td class="p-1.5"><input type="text" required placeholder="Coletor Zebra" class="w-full p-2 border rounded text-xs"></td>
-                                        <td class="p-1.5"><input type="text" required placeholder="TC21" class="w-full p-2 border rounded text-xs"></td>
-                                        <td class="p-1.5"><input type="text" required placeholder="Zebra" class="w-full p-2 border rounded text-xs"></td>
-                                        <td class="p-1.5"><input type="text" required placeholder="SN-88991122" class="w-full p-2 border rounded text-xs"></td>
-                                        <td class="p-1.5">
-                                            <select class="w-full p-2 border rounded text-xs font-bold text-orange-700 bg-white">
-                                                <option value="SOC-SP8">SOC-SP8</option>
-                                                <option value="SOC-SP2">SOC-SP2</option>
-                                                <option value="LM-RJ1">LM-RJ1</option>
-                                            </select>
+                                    <tr class="border-b linha-massa">
+                                        <td class="p-2"><input type="text" placeholder="Nome do Equipamento" class="input-nome w-full p-2 border rounded text-xs focus:ring-1 focus:ring-orange-500"></td>
+                                        <td class="p-2"><input type="text" placeholder="Nº Série / Tag" class="input-serie w-full p-2 border rounded text-xs focus:ring-1 focus:ring-orange-500"></td>
+                                        <td class="p-2">
+                                            <input type="file" accept="image/*" capture="environment" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-[#EE4D2D] hover:file:bg-orange-100">
                                         </td>
-                                        <td class="p-1.5"><input type="text" required placeholder="Rua 3" class="w-full p-2 border rounded text-xs"></td>
-                                        <td class="p-1.5"><input type="file" multiple accept="image/*,.pdf" class="w-full text-[10px] text-gray-500 file:py-1 file:px-2 file:rounded file:border-0 file:bg-orange-50 file:text-[#EE4D2D]"></td>
-                                        <td class="p-1.5"><input type="file" multiple accept="image/*" capture="environment" class="w-full text-[10px] text-gray-500 file:py-1 file:px-2 file:rounded file:border-0 file:bg-orange-50 file:text-[#EE4D2D]"></td>
-                                        <td class="p-1.5 text-center">
+                                        <td class="p-2 text-center">
                                             <button onclick="removerLinhaMassa(this)" class="text-red-500 hover:text-red-700 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                         </td>
                                     </tr>
@@ -383,107 +242,49 @@
                             </table>
                         </div>
 
-                        <button onclick="salvarEntradaMassa()" class="w-full bg-[#EE4D2D] hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
-                            <i data-lucide="upload" class="w-5 h-5"></i> SALVAR TODOS EM MASSA
+                        <button onclick="salvarEntradaMassa()" class="w-full bg-[#EE4D2D] hover:bg-orange-600 text-white font-bold py-2.5 rounded-lg shadow-md transition-all text-sm flex items-center justify-center gap-2">
+                            <i data-lucide="upload" class="w-4 h-4"></i> Salvar Todos em Massa
                         </button>
                     </div>
                 </div>
 
-                <!-- TRANSFERÊNCIA DE ATIVOS -->
-                <div id="tab-transferencia" class="tab-content hidden">
-                    <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-6">
-                        <h2 class="text-lg font-bold text-gray-800 border-b pb-3 flex items-center gap-2">
-                            <i data-lucide="arrow-left-right" class="w-5 h-5 text-[#EE4D2D]"></i> Transferência de Ativos Entre Centros de Custo
-                        </h2>
-
-                        <form onsubmit="salvarTransferencia(event)" class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">SELECIONAR ATIVO / Nº PLAQUETA *</label>
-                                    <input type="text" required placeholder="Digite ou bip a plaqueta" class="w-full p-2.5 border rounded-lg text-sm bg-white focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                <!-- ABA 4: PENDÊNCIAS / SLA -->
+                <div id="tab-pendencias" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b pb-2">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <i data-lucide="clock" class="w-5 h-5 text-gray-500"></i> Controladoria de Pendências & SLA
+                            </h2>
+                            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">SLA Padrão: 24h</span>
+                        </div>
+                        
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-orange-100 text-[#EE4D2D] flex items-center justify-center font-bold">
+                                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">SORTE CODE ORIGEM</label>
-                                    <input type="text" readonly value="SOC-SP8 - SoC_SP_Guarulhos" class="w-full p-2.5 border rounded-lg text-sm bg-gray-100 text-gray-700 font-bold">
+                                    <p class="text-sm font-bold text-gray-800">Transferência pendente - Tag: SN-882299</p>
+                                    <p class="text-xs text-gray-500">Origem: SOC-SP8 | Solicitado há 4 horas (SLA OK)</p>
                                 </div>
                             </div>
-
-                            <div class="p-4 bg-orange-50/50 border border-orange-100 rounded-xl space-y-4">
-                                <h3 class="text-xs font-bold text-orange-900 uppercase">DESTINO DA TRANSFERÊNCIA</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">SORTE CODE DESTINO *</label>
-                                        <select id="transfSorteCode" required onchange="atualizarSorteCodeTransf(this.value)" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-white font-bold text-orange-700 focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                            <option value="SOC-SP2">SOC-SP2</option>
-                                            <option value="SOC-SP8">SOC-SP8</option>
-                                            <option value="LM-RJ1">LM-RJ1</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">UF</label>
-                                        <input type="text" id="transfUf" readonly value="SP" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-gray-100 text-gray-700 font-bold">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">STATION NAME</label>
-                                        <input type="text" id="transfStation" readonly value="SoC_SP_Santana" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-gray-100 text-gray-700 font-bold">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-orange-900 uppercase mb-1">LOCALIZAÇÃO *</label>
-                                        <input type="text" required placeholder="Ex: RUA 5, PRATELEIRA A" class="w-full p-2.5 border border-orange-200 rounded-lg text-sm bg-white font-bold focus:ring-2 focus:ring-orange-500 focus:outline-none">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center bg-gray-50/50">
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">📄 ANEXAR TERMO OU NF DE TRANSFERÊNCIA (MÚLTIPLOS)</label>
-                                    <input type="file" multiple accept="image/*,.pdf" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-[#EE4D2D]">
-                                </div>
-
-                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center bg-gray-50/50">
-                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">📷 FOTOS DA CONDIÇÃO DO ATIVO (MÚLTIPLAS)</label>
-                                    <input type="file" multiple accept="image/*" capture="environment" class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-[#EE4D2D]">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="w-full bg-[#EE4D2D] hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
-                                <i data-lucide="send" class="w-5 h-5"></i> SOLICITAR TRANSFERÊNCIA DE ATIVO
+                            <button class="bg-[#EE4D2D] text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-orange-600 transition-colors">
+                                Aprovar Recebimento
                             </button>
-                        </form>
+                        </div>
                     </div>
-                </div>
-
-                <!-- OUTRAS ABAS -->
-                <div id="tab-pendencias" class="tab-content hidden bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                    <h2 class="text-lg font-bold text-gray-800 border-b pb-2">Pendências</h2>
-                    <p class="text-xs text-gray-500 mt-2">Nenhuma pendência encontrada para o Centro de Custo atual.</p>
-                </div>
-
-                <div id="tab-consulta" class="tab-content hidden bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                    <h2 class="text-lg font-bold text-gray-800 border-b pb-2">Leitor / Consulta Global</h2>
-                    <p class="text-xs text-gray-500 mt-2">Módulo de consulta pronto.</p>
-                </div>
-
-                <div id="tab-lista" class="tab-content hidden bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                    <h2 class="text-lg font-bold text-gray-800 border-b pb-2">Lista de Ativos</h2>
-                    <p class="text-xs text-gray-500 mt-2">Nenhum ativo cadastrado.</p>
-                </div>
-
-                <div id="tab-historico" class="tab-content hidden bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                    <h2 class="text-lg font-bold text-gray-800 border-b pb-2">Histórico de Audit</h2>
-                    <p class="text-xs text-gray-500 mt-2">Histórico atualizado.</p>
                 </div>
 
             </div>
         </main>
     </div>
 
-    <!-- SCRIPT FIREBASE -->
+    <!-- FIREBASE AUTHENTICATION LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Substitua apenas as aspas da apiKey pela sua chave real copiada do Firebase
+        // Cole aqui a sua apiKey do Firebase (spx-actives)
         const firebaseConfig = {
             apiKey: "AIzaSyDPNvnhQ9o0CtjIOeNHjBewjX6NmNLj5VE",
             authDomain: "spx-actives.firebaseapp.com",
@@ -562,14 +363,10 @@
     </script>
 
     <script>
-        const sorteCodeData = {
-            "SOC-SP2": { uf: "SP", station: "SoC_SP_Santana", tipo: "SOC" },
-            "SOC-SP8": { uf: "SP", station: "SoC_SP_Guarulhos", tipo: "SOC" },
-            "LM-RJ1": { uf: "RJ", station: "Hub_RJ_Capital", tipo: "LM" }
-        };
-
         document.addEventListener("DOMContentLoaded", () => {
-            if (window.lucide) lucide.createIcons();
+            if (window.lucide) {
+                lucide.createIcons();
+            }
         });
 
         function switchTab(tabId) {
@@ -612,46 +409,40 @@
             }
         }
 
-        function atualizarSorteCodeSingle(val) {
-            const info = sorteCodeData[val] || { uf: "-", station: "-", tipo: "-" };
-            document.getElementById('singleUf').value = info.uf;
-            document.getElementById('singleStation').value = info.station;
-            document.getElementById('singleTipoOp').value = info.tipo;
+        function previewImage(event, containerId) {
+            const container = document.getElementById(containerId);
+            const img = container.querySelector('img');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    container.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        function atualizarSorteCodeTransf(val) {
-            const info = sorteCodeData[val] || { uf: "-", station: "-", tipo: "-" };
-            document.getElementById('transfUf').value = info.uf;
-            document.getElementById('transfStation').value = info.station;
-        }
-
-        function calcularTotalSingle() {
-            const aquisicao = parseFloat(document.getElementById('singleValAquisicao').value) || 0;
-            const comp = parseFloat(document.getElementById('singleValComp').value) || 0;
-            document.getElementById('singleValTotal').value = (aquisicao + comp).toFixed(2);
-        }
-
+        // COPIA AUTOMATICAMENTE OS DADOS DA PRIMEIRA LINHA
         function adicionarLinhaMassa() {
             const tbody = document.getElementById('tabelaMassaBody');
+            const primeiraLinha = tbody.querySelector('.linha-massa');
+            
+            let nomePadrao = "";
+            if (primeiraLinha) {
+                nomePadrao = primeiraLinha.querySelector('.input-nome').value;
+            }
+
             const tr = document.createElement('tr');
-            tr.className = "border-b";
+            tr.className = "border-b linha-massa";
             tr.innerHTML = `
-                <td class="p-1.5"><input type="text" required placeholder="1000000005" class="w-full p-2 border rounded text-xs"></td>
-                <td class="p-1.5"><input type="text" required placeholder="Coletor Zebra" class="w-full p-2 border rounded text-xs"></td>
-                <td class="p-1.5"><input type="text" required placeholder="TC21" class="w-full p-2 border rounded text-xs"></td>
-                <td class="p-1.5"><input type="text" required placeholder="Zebra" class="w-full p-2 border rounded text-xs"></td>
-                <td class="p-1.5"><input type="text" required placeholder="SN-88991122" class="w-full p-2 border rounded text-xs"></td>
-                <td class="p-1.5">
-                    <select class="w-full p-2 border rounded text-xs font-bold text-orange-700 bg-white">
-                        <option value="SOC-SP8">SOC-SP8</option>
-                        <option value="SOC-SP2">SOC-SP2</option>
-                        <option value="LM-RJ1">LM-RJ1</option>
-                    </select>
+                <td class="p-2"><input type="text" value="${nomePadrao}" placeholder="Nome do Equipamento" class="input-nome w-full p-2 border rounded text-xs focus:ring-1 focus:ring-orange-500"></td>
+                <td class="p-2"><input type="text" placeholder="Nº Série / Tag" class="input-serie w-full p-2 border rounded text-xs focus:ring-1 focus:ring-orange-500"></td>
+                <td class="p-2">
+                    <input type="file" accept="image/*" capture="environment" class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-[#EE4D2D] hover:file:bg-orange-100">
                 </td>
-                <td class="p-1.5"><input type="text" required placeholder="Rua 3" class="w-full p-2 border rounded text-xs"></td>
-                <td class="p-1.5"><input type="file" multiple accept="image/*,.pdf" class="w-full text-[10px] text-gray-500 file:py-1 file:px-2 file:rounded file:border-0 file:bg-orange-50 file:text-[#EE4D2D]"></td>
-                <td class="p-1.5"><input type="file" multiple accept="image/*" capture="environment" class="w-full text-[10px] text-gray-500 file:py-1 file:px-2 file:rounded file:border-0 file:bg-orange-50 file:text-[#EE4D2D]"></td>
-                <td class="p-1.5 text-center">
+                <td class="p-2 text-center">
                     <button onclick="removerLinhaMassa(this)" class="text-red-500 hover:text-red-700 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 </td>
             `;
@@ -660,21 +451,21 @@
         }
 
         function removerLinhaMassa(btn) {
-            btn.closest('tr').remove();
+            const tbody = document.getElementById('tabelaMassaBody');
+            if (tbody.querySelectorAll('tr').length > 1) {
+                btn.closest('tr').remove();
+            } else {
+                alert("A tabela deve conter ao menos uma linha.");
+            }
         }
 
         function salvarNovaEntrada(e) {
             e.preventDefault();
-            alert("Equipamento cadastrado com sucesso com múltiplos anexos!");
+            alert("Equipamento registrado com sucesso!");
         }
 
         function salvarEntradaMassa() {
-            alert("Entrada em massa gravada com sucesso!");
-        }
-
-        function salvarTransferencia(e) {
-            e.preventDefault();
-            alert("Solicitação de transferência registrada com sucesso!");
+            alert("Entrada em massa salva com sucesso!");
         }
     </script>
 </body>
