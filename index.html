@@ -2145,18 +2145,39 @@
             if (e.key === 'Enter') executarBuscaEtiqueta();
         }
 
-        function executarBuscaEtiqueta() {
-            const tag = document.getElementById('scan-input').value.trim();
-            const a = ativos.find(x => x.etiqueta === tag);
-            if (!a) {
-                showToast('Plaqueta não encontrada em todo o banco SPX!', 'error');
-                return;
-            }
-            visualizarFichaCompleta(tag);
-        }
+      function executarBuscaEtiqueta() {
+    const tag = document.getElementById('scan-input').value.trim();
+    if (!tag) return;
 
-        function consultarEtiquetaDash() {
-            const tag = document.getElementById('dash-search-input').value.trim();
+    db.collection('ativos').doc(tag).get().then((doc) => {
+        if (doc.exists) {
+            const dadosDoAtivo = doc.data();
+            const ativoEncontrado = {
+                etiqueta: tag,
+                nome: dadosDoAtivo.nome,
+                valorAquisicao: dadosDoAtivo.valorAquisicao
+            };
+
+            console.log("Ativo carregado do Firebase:", ativoEncontrado);
+            
+            if (typeof ativos !== 'undefined') {
+                const index = ativos.findIndex(x => x.etiqueta === tag);
+                if (index !== -1) ativos[index] = ativoEncontrado;
+                else ativos.push(ativoEncontrado);
+            }
+
+            visualzarFichaCompleta(tag);
+        } else {
+            showToast('Plaqueta não encontrada em todo o banco SPX!', 'error');
+        }
+    }).catch((error) => {
+        console.error("Erro ao buscar ativo no Firebase:", error);
+        showToast('Erro ao conectar com o banco de dados!', 'error');
+    });
+}
+
+function consultarEtiquetaDash() {
+const tag = document.getElementById('dash-search-input').value.trim();
             if (tag) {
                 const a = ativos.find(x => x.etiqueta === tag);
                 if (!a) {
@@ -2167,5 +2188,35 @@
             }
         }
     </script>
+        // ... Final das suas funções atuais (consultarEtiquetaDash)
+        }
+    </script> <!-- Esse é o seu </script> atual que aparece no print -->
+
+    <!-- A PARTIR DAQUI VOCÊ COLA O MEU BLOCO CORRETAMENTE: -->
+    <!-- 1. Bibliotecas do Firebase -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+
+    <!-- 2. Sua Conexão Real do print -->
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyDPNvnhQ9o0CtjI0eNHjBewjX6NMnLj5VE",
+        authDomain: "://firebaseapp.com",
+        projectId: "spx-ativos",
+        storageBucket: "spx-ativos.firebasestorage.app",
+        messagingSenderId: "513330837557",
+        appId: "1:513330837557:web:2dc71333d515982176197c",
+        measurementId: "G-S7BBZK5LVE"
+      };
+
+      // Inicializa o Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      const auth = firebase.auth();
+
+      console.log("🔥 Firebase conectado com sucesso no sistema SPX-Ativos!");
+    </script>
+
 </body>
 </html>
